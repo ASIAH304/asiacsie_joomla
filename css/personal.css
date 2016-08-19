@@ -1,0 +1,79 @@
+body {
+    background: #eee;
+    font-family: "微軟正黑體", Arial, sans-serif !important;
+}
+
+#all {
+    background: #FFFFFF;
+    color: #444;
+}
+
+table {
+    border: solid 1px #ddd
+}
+
+table th {
+    background-color: #0074cc;
+    color: #fff;
+    background-image: -moz-linear-gradient(top, #095197, #1B6BA5);
+    background-image: -ms-linear-gradient(top, #095197, #1B6BA5);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#095197),
+        to(#1B6BA5) );
+    background-image: -webkit-linear-gradient(top, #095197, #1B6BA5);
+    background-image: -o-linear-gradient(top, #095197, #1B6BA5);
+    background-image: linear-gradient(top, #095197, #1B6BA5);
+    background-repeat: repeat-x;
+    filter: progid :   DXImageTransform.Microsoft.gradient (   startColorstr
+        =
+         '#095197', endColorstr =   '#1B6BA5', GradientType =   0 );
+    border-color: #0055cc #0055cc #003580;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    filter: progid :   dximagetransform.microsoft.gradient (   enabled =
+        false );
+}
+
+table th a:link,table th a:visited {
+    color: #fff
+}
+
+tr.odd,tr.cat-list-row1 {
+    background: #f8f8f8
+}
+
+table  tr:hover td {
+    background: #FEFDE2;
+}
+
+#footer-inner,#footer {
+    background: #f5f5f5;
+    /*box-shadow: 0px 20px 10px #555*/
+}
+
+#footer {
+    background: #555;
+    margin: 0 auto;
+    color: #fff
+}
+
+#footer a {
+    color: #fff;
+    background: none
+}
+
+
+@media only screen and (min-width: 600px) {
+}
+
+@media only screen and (min-width: 768px) {
+}
+
+@media only screen and (min-width: 992px) {
+}
+
+@media only screen and (min-width: 1382px) { /* Styles */
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5) , only screen and
+        (min--moz-device-pixel-ratio: 1.5) , only screen and
+    (min-device-pixel-ratio: 1.5) { /* Styles */
+}
