@@ -3,7 +3,7 @@
  * @package     Joomla.Site
  * @subpackage  Templates.protostar
  *
- * @copyright   Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -15,6 +15,12 @@ $user            = JFactory::getUser();
 $this->language  = $doc->language;
 $this->direction = $doc->direction;
 
+// Output document as HTML5.
+if (is_callable(array($doc, 'setHtml5')))
+{
+	$doc->setHtml5(true);
+}
+
 // Getting params from template
 $params = $app->getTemplate(true)->params;
 
@@ -25,14 +31,6 @@ $layout   = $app->input->getCmd('layout', '');
 $task     = $app->input->getCmd('task', '');
 $itemid   = $app->input->getCmd('Itemid', '');
 $sitename = $app->get('sitename');
-
-//echo JURI::current();
-if( JURI::base( true ) == "/csie" ){
-  	$theNewURL = str_replace("http://210.60.30.186/csie/","http://csie.asia.edu.tw/",JURI::current());
-  	header( "HTTP/1.1 301 Moved Permanently" ); 
-	header('Location: ' . $theNewURL);
-    exit();
-}
 
 if($task == "edit" || $layout == "form" )
 {
@@ -59,141 +57,138 @@ else
 {
 	$logo = '<span class="site-title" title="' . $sitename . '">' . $sitename . '</span>';
 }
-$lang = JFactory::getLanguage();
-$now_lang=$lang->getTag();
-$home_url="/";
-$lang_flag="";
-if($now_lang=="zh-TW"){
-	$home_url.="zh-tw/";
-	$lang_flag = "tw";
-}else if($now_lang=="en-GB"){
-	$home_url.="en/";
-	$lang_flag = "us";
-}
-$home_url=$this->baseurl.$home_url;
-$min_logo = 1;
-$max_logo = 23;
-$num_logo = 6;
-$logo = array("18");
-$llogo = 0;
-while($llogo<$num_logo){
-	$tmp_logo = rand($min_logo, $max_logo);
-	if( !in_array($tmp_logo,$logo) ){
-		array_push($logo,$tmp_logo);
-		$llogo++;
-	}
-}
 ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->language; ?>" lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
+<html lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title><?php echo $this->title; ?> <?php echo htmlspecialchars($this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/bootstrap.min.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template.css" type="text/css" />
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css" type="text/css" />
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript"></script>
-<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/responsiveslides.js" type="text/javascript"></script>
-<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/jquery.typetype.min.js" type="text/javascript"></script>
-<script src="http://yandex.st/highlightjs/8.0/highlight.min.js"></script>
-<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/js/bootstrap.min.js" type="text/javascript"></script>
-<!--[if lt IE 9]>
-<script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
-<style>
-h1.code{
-	font-family: 'Inconsolata';
-	font-size: 28px;
-	font-weight: bold;
-}
-</style>
+	<meta charset="utf-8" />
+	<title><?php echo $this->title; ?> <?php echo htmlspecialchars($this->error->getMessage(), ENT_QUOTES, 'UTF-8'); ?></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<?php // Use of Google Font ?>
+	<?php if ($params->get('googleFont')) : ?>
+		<link href="//fonts.googleapis.com/css?family=<?php echo $params->get('googleFontName'); ?>" rel="stylesheet" />
+		<style>
+			h1, h2, h3, h4, h5, h6, .site-title {
+				font-family: '<?php echo str_replace('+', ' ', $params->get('googleFontName')); ?>', sans-serif;
+			}
+		</style>
+	<?php endif; ?>
+	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/css/template.css" rel="stylesheet" />
+	<?php if ($app->get('debug_lang', '0') == '1' || $app->get('debug', '0') == '1') : ?>
+		<link href="<?php echo JUri::root(true); ?>/media/cms/css/debug.css" rel="stylesheet" />
+	<?php endif; ?>
+	<?php // If Right-to-Left ?>
+	<?php if ($this->direction == 'rtl') : ?>
+		<link href="<?php echo JUri::root(true); ?>/media/jui/css/bootstrap-rtl.css" rel="stylesheet" />
+	<?php endif; ?>
+	<link href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template; ?>/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+	<?php // Template color ?>
+	<?php if ($params->get('templateColor')) : ?>
+		<style>
+			body.site {
+				border-top: 3px solid <?php echo $params->get('templateColor'); ?>;
+				background-color: <?php echo $params->get('templateBackgroundColor'); ?>
+			}
+			a {
+				color: <?php echo $params->get('templateColor'); ?>;
+			}
+			.navbar-inner, .nav-list > .active > a, .nav-list > .active > a:hover, .dropdown-menu li > a:hover, .dropdown-menu .active > a, .dropdown-menu .active > a:hover, .nav-pills > .active > a, .nav-pills > .active > a:hover {
+				background: <?php echo $params->get('templateColor'); ?>;
+			}
+			.navbar-inner {
+				-moz-box-shadow: 0 1px 3px rgba(0, 0, 0, .25), inset 0 -1px 0 rgba(0, 0, 0, .1), inset 0 30px 10px rgba(0, 0, 0, .2);
+				-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, .25), inset 0 -1px 0 rgba(0, 0, 0, .1), inset 0 30px 10px rgba(0, 0, 0, .2);
+				box-shadow: 0 1px 3px rgba(0, 0, 0, .25), inset 0 -1px 0 rgba(0, 0, 0, .1), inset 0 30px 10px rgba(0, 0, 0, .2);
+			}
+		</style>
+	<?php endif; ?>
+	<!--[if lt IE 9]><script src="<?php echo JUri::root(true); ?>/media/jui/js/html5.js"></script><![endif]-->
 </head>
-
-<body>
-<div class="header_fun">
-	<div class="header_section">
-		<?php echo $doc->getBuffer('modules', 'position-0'); ?>
-	</div>
-	<?php echo $doc->getBuffer('modules', 'position-1'); ?>
-</div>
-<header id="header" class="container">
-	<div>
-		<h1 id="logo">
-			<ul class="rslides">
-				<?php foreach($logo as $key => $v){?>
-				<li><a href="<?php echo $this->baseurl; ?>/"><img src="<?php echo $this->baseurl; ?>/images/logo/<?php echo $v;?>.png"></a></li>
-				<?php }?>
-			</ul>
-		</h1>
-	</div>
-</header><!-- end header -->
-<?php echo $doc->getBuffer('modules', 'position-menu'); ?>
-<div class="container" id="main">
-	<div class="row">
-		<div class="col-md-2">
-			<?php echo $doc->getBuffer('modules', 'position-footerlink'); ?>
-		</div>
-		<div class="col-md-7">
-			<div class="jumbotron">
-				<h1 class="code" id="hdcode"></h1>
-				<p><strong><?php echo JText::_('JERROR_LAYOUT_ERROR_HAS_OCCURRED_WHILE_PROCESSING_YOUR_REQUEST'); ?></strong></p>
-				<p><?php echo JText::_('JERROR_LAYOUT_NOT_ABLE_TO_VISIT'); ?></p>
-				<ul>
-					<li><?php echo JText::_('JERROR_LAYOUT_AN_OUT_OF_DATE_BOOKMARK_FAVOURITE'); ?></li>
-					<li><?php echo JText::_('JERROR_LAYOUT_MIS_TYPED_ADDRESS'); ?></li>
-					<li><?php echo JText::_('JERROR_LAYOUT_SEARCH_ENGINE_OUT_OF_DATE_LISTING'); ?></li>
-					<li><?php echo JText::_('JERROR_LAYOUT_YOU_HAVE_NO_ACCESS_TO_THIS_PAGE'); ?></li>
-				</ul>
-				<?php if (JModuleHelper::getModule('search')) : ?>
-					<p><strong><?php echo JText::_('JERROR_LAYOUT_SEARCH'); ?></strong></p>
-					<p><?php echo JText::_('JERROR_LAYOUT_SEARCH_PAGE'); ?></p>
-					<?php echo $doc->getBuffer('module', 'search'); ?>
-				<?php endif; ?>
-				
+<body class="site <?php echo $option
+	. ' view-' . $view
+	. ($layout ? ' layout-' . $layout : ' no-layout')
+	. ($task ? ' task-' . $task : ' no-task')
+	. ($itemid ? ' itemid-' . $itemid : '')
+	. ($params->get('fluidContainer') ? ' fluid' : '');
+?>">
+	<!-- Body -->
+	<div class="body">
+		<div class="container<?php echo ($params->get('fluidContainer') ? '-fluid' : ''); ?>">
+			<!-- Header -->
+			<header class="header" role="banner">
+				<div class="header-inner clearfix">
+					<a class="brand pull-left" href="<?php echo $this->baseurl; ?>/">
+						<?php echo $logo; ?>
+					</a>
+					<div class="header-search pull-right">
+						<?php // Display position-0 modules ?>
+						<?php echo $doc->getBuffer('modules', 'position-0', array('style' => 'none')); ?>
+					</div>
+				</div>
+			</header>
+			<div class="navigation">
+				<?php // Display position-1 modules ?>
+				<?php echo $doc->getBuffer('modules', 'position-1', array('style' => 'none')); ?>
 			</div>
-			<div class="alert alert-dark alert-danger">
-				<p><?php echo JText::_('JERROR_LAYOUT_PLEASE_CONTACT_THE_SYSTEM_ADMINISTRATOR'); ?></p>
-				<blockquote>
-					<span class="label label-default"><?php echo $this->error->getCode(); ?></span> <?php echo htmlspecialchars($this->error->getMessage(), ENT_QUOTES, 'UTF-8');?>
-				</blockquote>
-				<?php if ($this->debug) : ?>
-					<?php echo $this->renderBacktrace(); ?>
-				<?php endif; ?>
+			<!-- Banner -->
+			<div class="banner">
+				<?php echo $doc->getBuffer('modules', 'banner', array('style' => 'xhtml')); ?>
+			</div>
+			<div class="row-fluid">
+				<div id="content" class="span12">
+					<!-- Begin Content -->
+					<h1 class="page-header"><?php echo JText::_('JERROR_LAYOUT_PAGE_NOT_FOUND'); ?></h1>
+					<div class="well">
+						<div class="row-fluid">
+							<div class="span6">
+								<p><strong><?php echo JText::_('JERROR_LAYOUT_ERROR_HAS_OCCURRED_WHILE_PROCESSING_YOUR_REQUEST'); ?></strong></p>
+								<p><?php echo JText::_('JERROR_LAYOUT_NOT_ABLE_TO_VISIT'); ?></p>
+								<ul>
+									<li><?php echo JText::_('JERROR_LAYOUT_AN_OUT_OF_DATE_BOOKMARK_FAVOURITE'); ?></li>
+									<li><?php echo JText::_('JERROR_LAYOUT_MIS_TYPED_ADDRESS'); ?></li>
+									<li><?php echo JText::_('JERROR_LAYOUT_SEARCH_ENGINE_OUT_OF_DATE_LISTING'); ?></li>
+									<li><?php echo JText::_('JERROR_LAYOUT_YOU_HAVE_NO_ACCESS_TO_THIS_PAGE'); ?></li>
+								</ul>
+							</div>
+							<div class="span6">
+								<?php if (JModuleHelper::getModule('search')) : ?>
+									<p><strong><?php echo JText::_('JERROR_LAYOUT_SEARCH'); ?></strong></p>
+									<p><?php echo JText::_('JERROR_LAYOUT_SEARCH_PAGE'); ?></p>
+									<?php echo $doc->getBuffer('module', 'search'); ?>
+								<?php endif; ?>
+								<p><?php echo JText::_('JERROR_LAYOUT_GO_TO_THE_HOME_PAGE'); ?></p>
+								<p><a href="<?php echo $this->baseurl; ?>/index.php" class="btn"><span class="icon-home"></span> <?php echo JText::_('JERROR_LAYOUT_HOME_PAGE'); ?></a></p>
+							</div>
+						</div>
+						<hr />
+						<p><?php echo JText::_('JERROR_LAYOUT_PLEASE_CONTACT_THE_SYSTEM_ADMINISTRATOR'); ?></p>
+						<blockquote>
+							<span class="label label-inverse"><?php echo $this->error->getCode(); ?></span> <?php echo htmlspecialchars($this->error->getMessage(), ENT_QUOTES, 'UTF-8');?>
+						</blockquote>
+						<?php if ($this->debug) : ?>
+							<?php echo $this->renderBacktrace(); ?>
+						<?php endif; ?>
+					</div>
+					<!-- End Content -->
+				</div>
 			</div>
 		</div>
-		<div class="col-md-3">
-			<?php echo $doc->getBuffer('modules', 'position-right'); ?>
-			<?php echo $doc->getBuffer('modules', 'position-left2'); ?>
+	</div>
+	<!-- Footer -->
+	<div class="footer">
+		<div class="container<?php echo ($params->get('fluidContainer') ? '-fluid' : ''); ?>">
+			<hr />
+			<?php echo $doc->getBuffer('modules', 'footer', array('style' => 'none')); ?>
+			<p class="pull-right">
+				<a href="#top" id="back-top">
+					<?php echo JText::_('TPL_PROTOSTAR_BACKTOTOP'); ?>
+				</a>
+			</p>
+			<p>
+				&copy; <?php echo date('Y'); ?> <?php echo $sitename; ?>
+			</p>
 		</div>
 	</div>
-</div>
-<footer id="footer">
-	
-	<a rel="nofollow" id="back-to-top" href="#" class="ui button olive circular huge icon back-to-top" role="button"><i class="fa icon fa-chevron-up"></i></a>
-</footer>
-<footer class="footer">
-	<div class="container">
-		<div class="footer-copyright text-center">
-			<?php echo $doc->getBuffer('modules', 'position-footer'); ?>
-          	<div><i class="fa fa-user"></i> Designed By Jingxun Lai</div>
-		</div>
-	</div>
-	<a rel="nofollow" id="back-to-top" href="#" class="ui button olive circular huge icon back-to-top" role="button"><i class="fa icon fa-chevron-up"></i></a>
-</footer>
-<script>jQuery(document).ready(function(){jQuery(window).scroll(function(){if(jQuery(this).scrollTop()>50){jQuery('#back-to-top').fadeIn();}else{jQuery('#back-to-top').fadeOut();}});jQuery('#back-to-top').click(function(){jQuery('#back-to-top').tooltip('hide');jQuery('body,html').animate({scrollTop:0},500);return false;});jQuery(".rslides").responsiveSlides({auto:true,speed:2000,timeout:6000,pager:false,nav:false,random:true,pause:false,pauseControls:true,prevText:"Previous",nextText:"Next",maxwidth:"",navContainer:"",manualControls:"",namespace:"rslides",before:function(){},after:function(){}});jQuery('#hdcode').typetype('System.out.println("<?php echo $this->error->getCode(); ?> <?php echo htmlspecialchars($this->error->getMessage(), ENT_QUOTES, 'UTF-8');?>");',{e:0.08,t:50,keypress:function(){},callback:function(){}});});</script>
-<jdoc:include type="modules" name="debug" />
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.6&appId=779740455389966";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+	<?php echo $doc->getBuffer('modules', 'debug', array('style' => 'none')); ?>
 </body>
 </html>
