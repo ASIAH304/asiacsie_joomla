@@ -100,4 +100,3 @@ defined('_JEXEC') or die;
 
 	<?php endif; ?>
 </div>
-<!-- End K2 Category Layout -->
